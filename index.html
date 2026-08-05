@@ -178,7 +178,7 @@
       const tabBtn = document.createElement('button');
       tabBtn.className = `tab-btn ${cIdx === 0 ? 'active' : ''}`;
       tabBtn.id = `tab-${cIdx}`;
-      tabBtn.innerText = cat.catName.split(' ')[1] || cat.catName;
+      tabBtn.innerText = cat.catName;
       tabBtn.onclick = () => goToStep(cIdx);
       tabContainer.appendChild(tabBtn);
 
