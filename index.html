@@ -3,50 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>內科住院醫師里程碑 2.0 線上評核表</title>
+  <title>內科住院醫師里程碑 2.0 線上評核系統</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #2d3748; }
-    .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    h1 { color: #1a365d; text-align: center; font-size: 24px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f4f8; margin: 0; padding: 15px; color: #2d3748; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    h1 { color: #1a365d; text-align: center; font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
     
-    .form-row { display: flex; gap: 20px; margin-bottom: 25px; }
+    /* 基本資料列 */
+    .form-row { display: flex; gap: 15px; margin-bottom: 20px; background: #ebf8ff; padding: 15px; border-radius: 8px; border: 1px solid #bee3f8; }
     .form-col { flex: 1; }
-    label.field-label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 15px; color: #2b6cb0; }
-    input[type="text"], select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px; background-color: #fff; }
+    label.field-label { font-weight: bold; display: block; margin-bottom: 6px; font-size: 14px; color: #2b6cb0; }
+    input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; background-color: #fff; }
     
-    .category-header { background: #2b6cb0; color: white; padding: 10px 15px; font-size: 18px; font-weight: bold; border-radius: 6px; margin: 30px 0 15px 0; }
+    /* 分頁標籤導覽 (Tabs) */
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+    .tab-btn { padding: 8px 12px; border: none; background: #e2e8f0; color: #4a5568; font-weight: bold; font-size: 13px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: #3182ce; color: white; }
+    .tab-btn.completed { background: #c6f6d5; color: #22543d; }
+
+    /* Section 區塊控制 */
+    .section-content { display: none; }
+    .section-content.active { display: block; }
+    .category-title { background: #2b6cb0; color: white; padding: 10px 15px; font-size: 17px; font-weight: bold; border-radius: 6px; margin-bottom: 15px; }
+
+    /* 評核卡片樣式 */
+    .eval-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; background: #ffffff; }
+    .eval-title { font-weight: bold; font-size: 16px; color: #2c5282; margin-bottom: 10px; border-left: 4px solid #3182ce; padding-left: 8px; }
     
-    .eval-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; background: #ffffff; }
-    .eval-title { font-weight: bold; font-size: 17px; color: #2c5282; margin-bottom: 12px; border-left: 4px solid #3182ce; padding-left: 10px; }
-    
-    .level-group { display: flex; flex-direction: column; gap: 8px; }
-    .level-option { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: flex-start; }
+    .level-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .level-option { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; background: #f8fafc; cursor: pointer; display: flex; align-items: flex-start; }
     .level-option:hover { background: #ebf8ff; border-color: #63b3ed; }
-    .level-option input[type="radio"] { margin-top: 3px; margin-right: 12px; transform: scale(1.2); }
-    
-    .level-tag { font-weight: bold; color: #2b6cb0; min-width: 80px; font-size: 14.5px; }
-    .level-desc { font-size: 14px; color: #4a5568; line-height: 1.4; flex: 1; }
-    
-    .level-option.half-level { background: #fff; border-style: dashed; border-color: #cbd5e0; margin-left: 18px; }
+    .level-option input[type="radio"] { margin-top: 3px; margin-right: 10px; transform: scale(1.1); }
+    .level-tag { font-weight: bold; color: #2b6cb0; min-width: 75px; font-size: 14px; }
+    .level-desc { font-size: 13.5px; color: #4a5568; line-height: 1.4; flex: 1; }
+    .level-option.half-level { background: #fff; border-style: dashed; border-color: #cbd5e0; margin-left: 15px; }
     .level-option.half-level .level-tag { color: #d69e2e; }
-    .level-option.half-level .level-desc { color: #718096; font-style: italic; }
     .level-option.other-option { background: #fff5f5; border-color: #fed7d7; }
-    .level-option.other-option .level-tag { color: #c53030; }
 
-    .submit-btn { width: 100%; background: #3182ce; color: white; border: none; padding: 16px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 20px; }
-    .submit-btn:hover { background: #2b6cb0; }
+    /* 個別建議欄位 */
+    .item-suggestion { margin-top: 10px; background: #f7fafc; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e0; }
+    .item-suggestion label { font-size: 13px; font-weight: bold; color: #4a5568; display: block; margin-bottom: 4px; }
 
-    @media (max-width: 640px) { .form-row { flex-direction: column; gap: 15px; } }
+    /* 大項總結區塊 (ACGME 規範) */
+    .category-summary-box { background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 15px; margin-top: 25px; margin-bottom: 15px; }
+    .summary-title { font-weight: bold; color: #9c4221; font-size: 15px; margin-bottom: 8px; }
+    .summary-desc { font-size: 13px; color: #744210; margin-bottom: 10px; line-height: 1.5; }
+    .summary-options { display: flex; gap: 15px; margin-bottom: 10px; }
+    .summary-options label { font-size: 14px; font-weight: bold; color: #2d3748; cursor: pointer; }
+
+    /* 按鈕列 */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 25px; gap: 15px; }
+    .action-btn { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
+    .prev-btn { background: #e2e8f0; color: #4a5568; }
+    .next-btn { background: #3182ce; color: white; }
+    .submit-btn { background: #38a169; color: white; }
+
+    @media (max-width: 640px) { .form-row { flex-direction: column; gap: 10px; } .summary-options { flex-direction: column; gap: 8px; } }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>內科住院醫師里程碑 2.0 臨床評核表</h1>
+  <h1>住院醫師里程碑 2.0 評核系統</h1>
   
+  <!-- 基本資料區 -->
   <div class="form-row">
     <div class="form-col">
-      <label class="field-label" for="doctorName">受評住院醫師姓名：</label>
+      <label class="field-label" for="doctorName">受評住院醫師：</label>
       <select id="doctorName" required>
         <option value="">-- 請選擇住院醫師 --</option>
         <option value="陳大明">陳大明 (R1)</option>
@@ -55,296 +78,226 @@
         <option value="黃美玲">黃美玲 (R3)</option>
       </select>
     </div>
-
     <div class="form-col">
-      <label class="field-label" for="evaluatorName">評核主治醫師姓名：</label>
+      <label class="field-label" for="evaluatorName">評核主治醫師：</label>
       <input type="text" id="evaluatorName" placeholder="請輸入主治醫師姓名" required>
     </div>
   </div>
 
-  <!-- 動態生成 22 個評核項目的容器 -->
-  <div id="evaluationContainer"></div>
+  <!-- 6大項分頁標籤導覽列 -->
+  <div class="nav-tabs" id="tabContainer"></div>
 
-  <div class="form-group" style="margin-top: 30px;">
-    <label class="field-label" for="comments">總體建議與具體評語：</label>
-    <textarea id="comments" rows="5" placeholder="請填寫整體臨床表現建議與改善方向..."></textarea>
+  <!-- 表單頁面容器 -->
+  <div id="sectionsContainer"></div>
+
+  <!-- 上一步/下一步/送出按鈕列 -->
+  <div class="btn-row">
+    <button class="action-btn prev-btn" id="prevBtn" onclick="changeStep(-1)">上一步</button>
+    <button class="action-btn next-btn" id="nextBtn" onclick="changeStep(1)">下一步</button>
+    <button class="action-btn submit-btn" id="submitBtn" onclick="submitForm()" style="display:none;">完成並送出評核</button>
   </div>
-
-  <button class="submit-btn" onclick="submitForm()">送出評核結果</button>
 </div>
 
 <script>
-  // 完整 22 個評核子項目資料表
+  // 完整 6 大核心領域評核資料結構
   const milestoneData = [
     {
-      category: "Patient Care (病人照護)",
+      catId: "pc",
+      catName: "1. Patient Care (病患照護)",
+      summaryDesc: "住院醫師於培訓計劃中，專業養成所需的知識、技能和態度/行為各方面，有令人滿意的發展。預期住院醫師將可以提供安全、有效、以病人為中心、及時、效率和公平的病患照護能力。",
       items: [
-        {
-          id: "pc1", title: "Patient Care 1: 病史詢問 (History)",
-          l1: "在指導之下，訪談有常見症狀的病人，並報告詳盡的病史",
-          l2: "依據鑑別診斷，訪談有常見症狀的病人，並做簡潔報告",
-          l3: "依據鑑別診斷，訪談有複雜症狀的病人，並做簡潔報告",
-          l4: "有效率的問診，內容包含重要社會心理層面與其他影響健康的病史，並做簡潔報告",
-          l5: "根據病人、家人與醫療體系需求，包含隱晦之相關病史，進行有效率且有用的問診"
-        },
-        {
-          id: "pc2", title: "Patient Care 2: 身體診察 (Physical Exam)",
-          l1: "在注意病人之舒適與安全之下，執行一般的身體診察；辨識常見的異常身體診察發現",
-          l2: "根據臆想診斷，針對常見的疾病臨床表現，執行身體診察；詮釋常見異常發現之意義",
-          l3: "針對複雜臨床表現執行身體診察；辨識並詮釋不常見且複雜的異常身體診察發現",
-          l4: "運用進階技巧找出不易察覺的發現；整合細微身體診察發現並導引至接續診斷與處置",
-          l5: "為角色模範，有效依據證據執行診察；教導身體診察發現之預測價值以導引處置"
-        },
-        {
-          id: "pc3", title: "Patient Care 3: 臨床推理 (Clinical Reasoning)",
-          l1: "組織及正確摘要病人評估所得資料以提出臨床臆斷",
-          l2: "針對常見表現整合資料提出基本鑑別診斷；在指導下找出臨床推理錯誤之處",
-          l3: "列舉完整且具優先順序之鑑別診斷；應用原則回溯性找出錯誤之處",
-          l4: "針對複雜表現合併隱晦、不尋常或矛盾發現提出鑑別診斷；持續反思並及時改善",
-          l5: "指導他人針對複雜表現提出鑑別診斷；展現如何辨識錯誤與反思，為角色模範"
-        },
-        {
-          id: "pc4", title: "Patient Care 4: 住院病人處置 (Patient Management - Inpatient)",
-          l1: "能於指導下，針對常見狀況制定處置計畫；辨識維持與促進健康的機會",
-          l2: "針對常見狀況制定與執行計畫並根據病程修正；指導下執行健康促進計畫",
-          l3: "針對複雜與多重共病制定高價值處置計畫；獨立結合社會心理因素制定健康促進計畫",
-          l4: "以醫病共享方式針對重症或多重共病制定高價值計畫；獨立執行詳盡健康促進計畫",
-          l5: "針對罕見、不明確表現或不尋常共病狀況制定與執行詳盡的處置計畫"
-        },
-        {
-          id: "pc5", title: "Patient Care 5: 門診病人處置 (Patient Management - Outpatient)",
-          l1: "在指導下針對常見慢性病或急性狀況制定處置計畫",
-          l2: "能針對常見慢性病與常見急性狀況制定並執行處置計畫",
-          l3: "針對多重慢性病制定計畫；對慢性共病併發緊急情況制定並執行初步處置計畫",
-          l4: "考量社會心理因素針對多重慢性病與急性狀況制定高價值詳盡處置計畫",
-          l5: "針對高度複雜慢性病整合跨學科建議；針對罕見或不明確病況制定處置計畫"
-        },
-        {
-          id: "pc6", title: "Patient Care 6: 數位健康 (Digital Health)",
-          l1: "使用電子病歷進行常規照護；辨識遠距看診所需的設備與方法",
-          l2: "淋漓盡致使用電子病歷整合次要資料；以被認證之資訊系統進行遠距看診",
-          l3: "有效運用電子病歷資料進行急慢性照護；辨識可利用遠距看診處理之臨床狀況",
-          l4: "以電子病歷促進達成醫療品質標的；有效整合遠距醫療於急慢性病人照護",
-          l5: "引領電子病歷系統之改善；運用新興科技與創新方法以加強遠距看診"
-        }
+        { id: "pc1", title: "Patient Care 1: 病史詢問 (History)", l1: "在指導之下，訪談有常見症狀的病人，並報告詳盡的病史", l2: "依據鑑別診斷，訪談有常見症狀的病人，並做簡潔報告", l3: "依據鑑別診斷，訪談有複雜症狀的病人，並做簡潔報告", l4: "有效率的問診，內容包含重要社會心理層面與其他影響健康的病史，並做簡潔報告", l5: "根據病人、家人與醫療體系需求，包含隱晦之相關病史，進行有效率且有用的問診" },
+        { id: "pc2", title: "Patient Care 2: 身體診察 (Physical Exam)", l1: "注意病人之舒適與安全下執行一般身體診察；辨識常見異常發現", l2: "針對常見疾病表現執行診察；詮釋常見異常發現之意義", l3: "針對複雜表現執行身體診察；辨識並詮釋不常見且複雜之異常發現", l4: "運用進階技巧找出不易察覺發現；整合細微診察發現導引至處置", l5: "角色模範，有效依據證據執行診察；教導身體診察發現之預測價值" },
+        { id: "pc3", title: "Patient Care 3: 臨床推理 (Clinical Reasoning)", l1: "組織及正確摘要病人評估資料以提出臨床臆斷", l2: "整合資料提出基本鑑別診斷；指導下找出臨床推理錯誤之處", l3: "列舉完整具優先順序之鑑別診斷；應用原則回溯性找出錯誤", l4: "針對複雜表現合併矛盾發現提出鑑別診斷；反覆持續自我評量", l5: "指導他人提出鑑別診斷；展現如何辨識錯誤與反思，為角色模範" },
+        { id: "pc4", title: "Patient Care 4: 住院病人處置 (Inpatient)", l1: "指導下針對常見狀況制定處置計畫；辨識健康促進機會", l2: "針對常見狀況制定與執行計畫；指導下執行健康促進計畫", l3: "針對多重共病制定高價值計畫；獨立結合社會心理因素促進健康", l4: "醫病共享方式針對重症制定高價值計畫；獨立執行詳盡健康計畫", l5: "針對罕見或不明確表現制定與執行詳盡的處置計畫" },
+        { id: "pc5", title: "Patient Care 5: 門診病人處置 (Outpatient)", l1: "指導下針對常見慢性病或急性狀況制定處置計畫", l2: "針對常見慢性病與急性狀況制定並執行處置計畫", l3: "針對多重慢性病制定計畫；慢性共病併發緊急情況執行初步計畫", l4: "考量社會心理因素針對多重慢性病制定高價值詳盡計畫", l5: "針對高度複雜慢性病整合跨學科建議；針對罕見病況制定計畫" },
+        { id: "pc6", title: "Patient Care 6: 數位健康 (Digital Health)", l1: "使用電子病歷進行常規照護；辨識遠距看診所需設備", l2: "運用電子病歷整合次要資料；以認證資訊系統進行遠距看診", l3: "有效運用電子病歷資料；辨識可利用遠距看診處理之臨床狀況", l4: "以電子病歷促進達成品質標的；有效整合遠距醫療於臨床處置", l5: "引領電子病歷系統改善；運用新興科技與創新方法加強遠距看診" }
       ]
     },
     {
-      category: "Medical Knowledge (醫學知識)",
+      catId: "mk",
+      catName: "2. Medical Knowledge (醫學知識)",
+      summaryDesc: "住院醫師正朝向無需監督的層級前進，預期將具備足夠的醫學基礎知識與應用能力。",
       items: [
-        {
-          id: "mk1", title: "Medical Knowledge 1: 應用基礎科學 (Applied Foundational Sciences)",
-          l1: "以科學知識（生理、社會科學、疾病機轉）解釋正常人體功能與常見醫療狀況",
-          l2: "以科學知識解釋複雜的醫療狀況",
-          l3: "整合科學知識以解釋多重器官系統疾病的共病狀況",
-          l4: "整合科學知識以解釋少見、不典型或複雜多重器官系統疾病的共病狀況",
-          l5: "展現細緻地解釋少見、不典型或複雜病況之相關科學知識"
-        },
-        {
-          id: "mk2", title: "Medical Knowledge 2: 治療知識 (Therapeutic Knowledge)",
-          l1: "以科學知識解釋常見的治療方式",
-          l2: "解釋常見治療的適應症、禁忌症、風險與療效",
-          l3: "為具有共病、多系統疾病或診斷不確定的病人整合有關治療的知識",
-          l4: "考量病人的臨床與心理社會狀況，整合治療知識以制定治療選項",
-          l5: "展現對新興的、非典型的或複雜的治療選項細緻入微的理解"
-        },
-        {
-          id: "mk3", title: "Medical Knowledge 3: 診斷檢查 (Knowledge of Diagnostic Testing)",
-          l1: "解釋常用診斷檢查的理由、風險與好處；解釋常用診斷檢查的結果",
-          l2: "解釋複雜性診斷檢查的理由與結果",
-          l3: "整合不同診斷檢查策略之價值與特色；正確整合多項檢查以得到最可能診斷",
-          l4: "於共病或多系統疾病中整合檢查策略；解釋結果時能預期診斷檢查的限制（如敏感性/專一性）",
-          l5: "展現對新興、非典型或複雜診斷檢查細緻入微的理解"
-        }
+        { id: "mk1", title: "Medical Knowledge 1: 應用基礎科學", l1: "以科學知識解釋正常人體功能與常見醫療狀況", l2: "以科學知識解釋複雜的醫療狀況", l3: "整合科學知識以解釋多重器官系統疾病的共病狀況", l4: "整合科學知識解釋少見、不典型或複雜多重器官系統疾病共病", l5: "展現細緻地解釋少見、不典型或複雜病況之相關科學知識" },
+        { id: "mk2", title: "Medical Knowledge 2: 治療知識", l1: "以科學知識解釋常見的治療方式", l2: "解釋常見治療的適應症、禁忌症、風險與療效", l3: "為具有共病、多系統疾病或診斷不確定的病人整合治療知識", l4: "考量臨床與心理社會狀況，整合治療知識以制定選項", l5: "展現對新興、非典型或複雜治療選項細緻入微的理解" },
+        { id: "mk3", title: "Medical Knowledge 3: 診斷檢查", l1: "解釋常用診斷檢查的理由與結果", l2: "解釋複雜性診斷檢查的理由與結果", l3: "整合不同診斷檢查策略之價值與特色；正確整合檢查結果", l4: "於共病或多系統疾病中整合檢查策略；預期診斷檢查限制", l5: "展現對新興、非典型或複雜診斷檢查細緻入微的理解" }
       ]
     },
     {
-      category: "Systems-Based Practice (體制下的工作及實踐)",
+      catId: "sbp",
+      catName: "3. Systems-Based Practice (體制下工作)",
+      summaryDesc: "住院醫師能理解並利用醫療體系資源，提升系統性醫療品質與病人安全。",
       items: [
-        {
-          id: "sbp1", title: "Systems-Based Practice 1: 病安及醫品 (Patient Safety & Quality Improvement)",
-          l1: "知道常見病安事件與報告方式；知道基本改善病安的方法與指標",
-          l2: "辨識體制中造成病安之因子並進行回報；描述在地品質改善措施（如跌倒/戒菸）",
-          l3: "協助分析病安事件並參與向家屬解釋；對在地的品質改善措施有貢獻",
-          l4: "進行病安事件分析並提供預防方法；展現執行及分析品質改善計畫所需的技巧(PDCA)",
-          l5: "領導團隊修訂體制以預防事件；在院內或社區層面規劃並執行持續的品質改善措施"
-        },
-        {
-          id: "sbp2", title: "Systems-Based Practice 2: 以病人為中心的照護系統 (System Navigation)",
-          l1: "展現跨團隊合作照護知識；知道安全有效移轉照護及交班關鍵要素；展現族群健康知識",
-          l2: "常規情況下運用跨專業團隊整合照護；執行安全交班；辨識在地特定族群健康需求與不平等",
-          l3: "複雜情況下運用團隊整合照護；完成複雜交班；有效利用在地資源滿足社區需求",
-          l4: "建立跨專業整合模式為模範；倡導院間安全交班；參與改變醫療模式以滿足特定族群",
-          l5: "分析跨團隊照護過程並引領改善；改善交班品質；引領創新並為就醫不平等族群發聲"
-        },
-        {
-          id: "sbp3", title: "Systems-Based Practice 3: 醫師於醫療照護系統的角色 (Physician Role in Health Systems)",
-          l1: "辨識醫療照護系統中的關鍵組成；描述基本的健康支付系統（如健保制度）",
-          l2: "描述系統各組成間的相互關聯與影響；於醫療照護中考慮每位病人的支付模式",
-          l3: "討論醫師個人執業如何影響系統；邀請病人參與共同決策並告知醫療支付模式",
-          l4: "處理複雜醫療系統組成以提供高效照護；倡導考量病人支付模式限制下的需求",
-          l5: "倡導或領導系統變革以提供高評價高效照護；積極參與倡議活動以影響醫療政策"
-        }
+        { id: "sbp1", title: "SBP 1: 病安及醫品", l1: "知道常見病安事件與報告方式；知道基本改善方法與指標", l2: "辨識體制中造成病安之因子並回報；描述在地品質改善措施", l3: "協助分析病安事件；參與向家屬解釋；對品質改善措施有貢獻", l4: "進行病安事件分析並提供預防方法；展現執行PDCA等計畫技巧", l5: "領導團隊修訂體制以預防事件；規劃並執行持續品質改善措施" },
+        { id: "sbp2", title: "SBP 2: 以病人為中心的照護系統", l1: "展現跨團隊照護知識；知道安全交班關鍵要素", l2: "常規情況下運用跨專業團隊；執行安全交班；辨識社區健康需求", l3: "複雜情況下運用團隊照護；完成複雜交班；有效利用在地資源", l4: "建立跨專業整合模式為模範；倡導院間安全交班", l5: "分析團隊照護過程並引領改善；改善交班品質為就醫不平等發聲" },
+        { id: "sbp3", title: "SBP 3: 醫師於醫療照護系統的角色", l1: "辨識醫療照護系統關鍵組成；描述健保等支付系統", l2: "描述系統組成間相互關聯；照護中考慮每位病人支付模式", l3: "討論個人執業如何影響系統；邀請病人參與共同決策", l4: "處理複雜醫療系統組成以提供高效照護；倡導考量支付限制", l5: "倡導或領導系統變革以提供高評價高效照護；積極參與政策倡議" }
       ]
     },
     {
-      category: "Practice-Based Learning and Improvement (行醫的學習和改進)",
+      catId: "pb",
+      catName: "4. Practice-Based Learning (行醫學習)",
+      summaryDesc: "住院醫師能持續評估自我行醫過程、吸收實證醫學，並致力於個人與專業自我成長。",
       items: [
-        {
-          id: "pb1", title: "PBLI 1: 實證與知情 (Evidence-Based Practice)",
-          l1: "在指導之下，展現如何獲取、分類和分析臨床證據 (Ask, Acquire, Appraise)",
-          l2: "清楚明瞭病人的臨床問題，並根據偏好與價值觀進行實證照護",
-          l3: "精密評估與應用最佳臨床證據，結合病人偏好於複雜病人照護",
-          l4: "即使面對不確定和相互矛盾的臨床證據，也能引用實證為病人量身訂製照護",
-          l5: "指導他人對搜尋所得之臨床實證做精密評估與應用於病人照護"
-        },
-        {
-          id: "pb2", title: "PBLI 2: 持續反思與自我成長 (Reflective Practice)",
-          l1: "設定目標以專業發展為己志；指導下找出理想與實際表現落差的因素",
-          l2: "敞開心胸面對評量回饋；分析反思落差因素並積極尋求改進",
-          l3: "接納謙遜地徵求評量結果；自主反思落差；提示下設計與執行個人化學習計劃",
-          l4: "持續廣為徵求評量；檢討原先假設以縮小落差；獨立制定與實施個人化學習計劃",
-          l5: "為謙遜徵求評量之角色模範；指導他人進行反思；運用資料衡量學習計劃效果並改進"
-        }
+        { id: "pb1", title: "PBLI 1: 實證與知情 (5A)", l1: "在指導之下，展現如何獲取、分類和分析臨床證據", l2: "清楚明瞭臨床問題，根據偏好與價值觀進行實證照護", l3: "精密評估與應用最佳臨床證據，結合病人偏好於複雜照護", l4: "即使面對不確定與矛盾證據，也能引用實證為病人量身訂製", l5: "指導他人對搜尋所得之臨床實證做精密評估與應用" },
+        { id: "pb2", title: "PBLI 2: 持續反思與自我成長 (5R)", l1: "設定目標；指導下找出理想與實際表現落差的因素", l2: "敞開心胸面對評量回饋；分析落差因素並積極尋求改進", l3: "謙遜徵求評量結果；自主反思落差；提示下執行學習計劃", l4: "持續廣為徵求評量；檢討原先假設；獨立制定與實施學習計劃", l5: "為謙遜徵求評量之角色模範；指導他人反思；衡量學習計劃效果" }
       ]
     },
     {
-      category: "Professionalism (專業素養)",
+      catId: "prof",
+      catName: "5. Professionalism (專業素養)",
+      summaryDesc: "住院醫師展現高度倫理素養、責任心、遵從專業規範，並關注個人與團隊健康狀態。",
       items: [
-        {
-          id: "prof1", title: "Professionalism 1: 專業的舉止 (Professional Behavior)",
-          l1: "在常規工作中，展現專業行為",
-          l2: "找出造成專業失誤的潛在誘因，並為自己的專業失誤承擔責任",
-          l3: "在複雜或承受壓力的狀況下，展現專業行為",
-          l4: "辨認可能引發專業失誤的情況，並採取措施以預防自己與他人的失誤",
-          l5: "當他人的行為不符合專業期望時，給予指導"
-        },
-        {
-          id: "prof2", title: "Professionalism 2: 倫理四原則 (Ethical Principles)",
-          l1: "知道基本倫理原則（尊重自主、不傷害、行善利他、正義）",
-          l2: "應用基本倫理原則來處置單純狀況",
-          l3: "以倫理原則分析複雜情境，並且能適時尋求協助",
-          l4: "分析複雜倫理情境，並能適當運用資源來處理和解決倫理困境",
-          l5: "辨識並尋求解決醫療體系層級會誘發或加重倫理問題的因素"
-        },
-        {
-          id: "prof3", title: "Professionalism 3: 負責及責任心 (Accountability/Conscientiousness)",
-          l1: "在提醒之下，處理行政工作跟病人照護責任",
-          l2: "在常態下，適時處理行政工作跟病人照護責任",
-          l3: "在複雜或有壓力之情境下，適時處理行政工作跟病人照護責任",
-          l4: "積極施行策略，來確保病人、團隊跟系統之需求都能被滿足",
-          l5: "制定策略以促進他人有效率的完成行政工作跟病人照護責任"
-        },
-        {
-          id: "prof4", title: "Professionalism 4: 影響「良好狀態」之體制與個人因素 (Well-Being)",
-          l1: "知道於處理影響專業及個人「良好狀態」事件時，尋求幫助的重要性",
-          l2: "列出支持良好狀態之資源；辨認會影響良好狀態之體制因素",
-          l3: "在提示下反思良好狀態對臨床之影響；描述會影響良好狀態之體制因素",
-          l4: "面對醫師工作情緒挑戰能即時反思並積極應對；提出體制因素之解決方案",
-          l5: "參與體制變革以促進專業及個人「良好狀態」"
-        }
+        { id: "prof1", title: "Professionalism 1: 專業的舉止", l1: "在常規工作中，展現專業行為", l2: "找出造成專業失誤的潛在誘因，為自己的失誤承擔責任", l3: "在複雜或承受壓力的狀況下，展現專業行為", l4: "辨認可能引發專業失誤的情況，預防自己與他人的失誤", l5: "當他人的行為不符合專業期望時，給予指導" },
+        { id: "prof2", title: "Professionalism 2: 倫理四原則", l1: "知道基本倫理原則（自主、不傷害、行善、正義）", l2: "應用基本倫理原則來處置單純狀況", l3: "以倫理原則分析複雜情境，能適時尋求協助", l4: "分析複雜倫理情境，適當運用資源解決倫理困境", l5: "辨識並尋求解決醫療體系層級會誘發倫理問題的因素" },
+        { id: "prof3", title: "Professionalism 3: 負責及責任心", l1: "在提醒之下，處理行政工作跟病人照護責任", l2: "在常態下，適時處理行政工作跟病人照護責任", l3: "在複雜或有壓力情境下，適時處理行政與照護責任", l4: "積極施行策略，確保病人、團隊跟系統需求被滿足", l5: "制定策略以促進他人有效率完成行政與照護責任" },
+        { id: "prof4", title: "Professionalism 4: 影響「良好狀態」之因素", l1: "知道於處理影響「良好狀態」事件時，尋求幫助的重要性", l2: "列出支持良好狀態之資源；辨認影響良好狀態之體制因素", l3: "提示下反思良好狀態對臨床之影響；描述體制因素", l4: "面對工作情緒挑戰能即時反思並積極應對；提出解決方案", l5: "參與體制變革以促進專業及個人「良好狀態」" }
       ]
     },
     {
-      category: "Interpersonal and Communication Skills (人際關係和溝通技巧)",
+      catId: "ics",
+      catName: "6. Communication (人際與溝通)",
+      summaryDesc: "住院醫師能進行以病人為中心的良好溝通，並與跨專業團隊進行有效協作與記錄。",
       items: [
-        {
-          id: "ics1", title: "ICS 1: 以患者和家庭為中心的溝通 (Patient & Family Communication)",
-          l1: "以言語及非言語行為展現尊重與建立醫病關係；辨識常見影響溝通之阻礙",
-          l2: "在單純情境中有效溝通建立醫病關係；辨識複雜溝通阻礙（含個人偏見）",
-          l3: "在複雜情境中有效溝通維持醫病關係；減少溝通障礙",
-          l4: "無論情境複雜與否均運用醫病共享模式建立醫病關係；為減少溝通障礙之模範",
-          l5: "教導他人如何建立跟維持醫病關係與減少溝通障礙"
-        },
-        {
-          id: "ics2", title: "ICS 2: 跨專業和團隊溝通 (Interprofessional Team Communication)",
-          l1: "有禮貌的請求跟回應會診；表達對跨領域團隊所有成員之尊重",
-          l2: "清楚簡潔的請求跟回應會診；與團隊成員彼此互通訊息（含回饋）",
-          l3: "會診時檢視彼此理解是否一致；促進團隊溝通以調和衝突與給予困難回饋",
-          l4: "協調不同會診者建議以優化照護；調整溝通模式；弭平會診者間歧見與衝突",
-          l5: "以彈性溝通策略促進卓越團隊合作，為角色模範"
-        },
-        {
-          id: "ics3", title: "ICS 3: 醫療系統內的溝通 (Communication Within Health Systems)",
-          l1: "正確記錄病人完整及目前資訊；使用體制政策指定模式保護個人健康資訊",
-          l2: "以有組織方式記錄臨床訪視（含臨床推理）；協助下選擇適當直接/間接溝通方式",
-          l3: "以簡潔且完整方式記錄臨床訪視；根據臨床情境選擇適當直接/間接溝通方式",
-          l4: "以清楚、簡潔、及時且有組織方式記錄訪視（含預期發展）；為有效溝通模範",
-          l5: "指導制定部門或體制的溝通政策和程序"
-        }
+        { id: "ics1", title: "ICS 1: 以患者和家庭為中心的溝通", l1: "以言語及非言語行為展現尊重；辨識常見溝通阻礙", l2: "單純情境中有效溝通建立醫病關係；辨識複雜溝通阻礙", l3: "複雜情境中有效溝通維持醫病關係；減少溝通障礙", l4: "無論情境複雜與否均運用醫病共享模式；為減少障礙模範", l5: "教導他人如何建立醫病關係與減少溝通障礙" },
+        { id: "ics2", title: "ICS 2: 跨專業和團隊溝通", l1: "有禮貌的請求跟回應會診；表達對跨領域團隊之尊重", l2: "清楚簡潔的請求跟回應會診；與團隊成員互通訊息", l3: "會診時檢視彼此理解是否一致；調和衝突與給予回饋", l4: "協調不同會診者建議；調整溝通模式；弭平團隊衝突", l5: "以彈性溝通策略促進團隊合作，為角色模範" },
+        { id: "ics3", title: "ICS 3: 醫療系統內的溝通", l1: "正確記錄病人完整資訊；保護個人健康資訊", l2: "以有組織方式記錄臨床訪視；選擇適當溝通方式", l3: "以簡潔且完整方式記錄訪視；選擇適當溝通方式", l4: "以清楚、簡潔、及時且有組織方式記錄訪視；為溝通模範", l5: "指導制定部門或體制的溝通政策和程序" }
       ]
     }
   ];
 
-  // 動態繪製所有項目
-  const container = document.getElementById('evaluationContainer');
-  milestoneData.forEach(cat => {
-    const catHeader = document.createElement('div');
-    catHeader.className = 'category-header';
-    catHeader.innerText = cat.category;
-    container.appendChild(catHeader);
+  let currentStep = 0;
 
-    cat.items.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'eval-card';
-      card.innerHTML = `
-        <div class="eval-title">${item.title}</div>
-        <div class="level-group">
-          <label class="level-option"><input type="radio" name="${item.id}" value="Level 1" required><span class="level-tag">Level 1</span><span class="level-desc">${item.l1}</span></label>
-          <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 1.5"><span class="level-tag">Level 1.5</span><span class="level-desc">表現介於 Level 1 與 Level 2 之間</span></label>
-          <label class="level-option"><input type="radio" name="${item.id}" value="Level 2"><span class="level-tag">Level 2</span><span class="level-desc">${item.l2}</span></label>
-          <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 2.5"><span class="level-tag">Level 2.5</span><span class="level-desc">表現介於 Level 2 與 Level 3 之間</span></label>
-          <label class="level-option"><input type="radio" name="${item.id}" value="Level 3"><span class="level-tag">Level 3</span><span class="level-desc">${item.l3}</span></label>
-          <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 3.5"><span class="level-tag">Level 3.5</span><span class="level-desc">表現介於 Level 3 與 Level 4 之間</span></label>
-          <label class="level-option"><input type="radio" name="${item.id}" value="Level 4"><span class="level-tag">Level 4</span><span class="level-desc">${item.l4}</span></label>
-          <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 4.5"><span class="level-tag">Level 4.5</span><span class="level-desc">表現介於 Level 4 與 Level 5 之間</span></label>
-          <label class="level-option"><input type="radio" name="${item.id}" value="Level 5"><span class="level-tag">Level 5</span><span class="level-desc">${item.l5}</span></label>
-          <label class="level-option other-option"><input type="radio" name="${item.id}" value="尚未達到等級 1"><span class="level-tag">其他</span><span class="level-desc">尚未達到等級 1</span></label>
-          <label class="level-option other-option"><input type="radio" name="${item.id}" value="無法評估"><span class="level-tag">其他</span><span class="level-desc">無法評估</span></label>
+  // 初始化繪製 UI
+  function initForm() {
+    const tabContainer = document.getElementById('tabContainer');
+    const sectionsContainer = document.getElementById('sectionsContainer');
+
+    milestoneData.forEach((cat, cIdx) => {
+      // 1. 建立 Tab
+      const tabBtn = document.createElement('button');
+      tabBtn.className = `tab-btn ${cIdx === 0 ? 'active' : ''}`;
+      tabBtn.id = `tab-${cIdx}`;
+      tabBtn.innerText = cat.catName.split(' ')[1] || cat.catName;
+      tabBtn.onclick = () => goToStep(cIdx);
+      tabContainer.appendChild(tabBtn);
+
+      // 2. 建立 Section 頁面
+      const secDiv = document.createElement('div');
+      secDiv.className = `section-content ${cIdx === 0 ? 'active' : ''}`;
+      secDiv.id = `section-${cIdx}`;
+
+      let html = `<div class="category-title">${cat.catName}</div>`;
+
+      cat.items.forEach(item => {
+        html += `
+          <div class="eval-card">
+            <div class="eval-title">${item.title}</div>
+            <div class="level-group">
+              <label class="level-option"><input type="radio" name="${item.id}" value="Level 1" required><span class="level-tag">Level 1</span><span class="level-desc">${item.l1}</span></label>
+              <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 1.5"><span class="level-tag">Level 1.5</span><span class="level-desc">表現介於 Level 1 與 Level 2 之間</span></label>
+              <label class="level-option"><input type="radio" name="${item.id}" value="Level 2"><span class="level-tag">Level 2</span><span class="level-desc">${item.l2}</span></label>
+              <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 2.5"><span class="level-tag">Level 2.5</span><span class="level-desc">表現介於 Level 2 與 Level 3 之間</span></label>
+              <label class="level-option"><input type="radio" name="${item.id}" value="Level 3"><span class="level-tag">Level 3</span><span class="level-desc">${item.l3}</span></label>
+              <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 3.5"><span class="level-tag">Level 3.5</span><span class="level-desc">表現介於 Level 3 與 Level 4 之間</span></label>
+              <label class="level-option"><input type="radio" name="${item.id}" value="Level 4"><span class="level-tag">Level 4</span><span class="level-desc">${item.l4}</span></label>
+              <label class="level-option half-level"><input type="radio" name="${item.id}" value="Level 4.5"><span class="level-tag">Level 4.5</span><span class="level-desc">表現介於 Level 4 與 Level 5 之間</span></label>
+              <label class="level-option"><input type="radio" name="${item.id}" value="Level 5"><span class="level-tag">Level 5</span><span class="level-desc">${item.l5}</span></label>
+              <label class="level-option other-option"><input type="radio" name="${item.id}" value="尚未達到等級 1"><span class="level-tag">其他</span><span class="level-desc">尚未達到等級 1</span></label>
+              <label class="level-option other-option"><input type="radio" name="${item.id}" value="無法評估"><span class="level-tag">其他</span><span class="level-desc">無法評估</span></label>
+            </div>
+            <div class="item-suggestion">
+              <label for="sug_${item.id}">建議 / 具體評語：</label>
+              <input type="text" id="sug_${item.id}" placeholder="可輸入對該項目的文字建議...">
+            </div>
+          </div>
+        `;
+      });
+
+      // 3. 加上大項總結區塊 (ACGME 評估)
+      html += `
+        <div class="category-summary-box">
+          <div class="summary-title">${cat.catName} 綜合評估</div>
+          <div class="summary-desc">${cat.summaryDesc}</div>
+          <div class="summary-options">
+            <label><input type="radio" name="summary_status_${cat.catId}" value="是 (Yes)"> 是 (Yes)</label>
+            <label><input type="radio" name="summary_status_${cat.catId}" value="否 (No)"> 否 (No)</label>
+            <label><input type="radio" name="summary_status_${cat.catId}" value="狀況改善中 (Conditional)"> 狀況改善中</label>
+          </div>
+          <textarea id="summary_comment_${cat.catId}" rows="2" placeholder="對本大項的綜合評語與整體建議..."></textarea>
         </div>
       `;
-      container.appendChild(card);
-    });
-  });
 
-  // ⚠️ 請填寫你部署獲得的 Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = "請替換成你的_Google_Apps_Script_URL";
+      secDiv.innerHTML = html;
+      sectionsContainer.appendChild(secDiv);
+    });
+
+    updateStepUI();
+  }
+
+  // 切換步驟
+  function changeStep(delta) {
+    let nextStep = currentStep + delta;
+    if (nextStep >= 0 && nextStep < milestoneData.length) {
+      goToStep(nextStep);
+    }
+  }
+
+  function goToStep(stepIndex) {
+    currentStep = stepIndex;
+    milestoneData.forEach((_, idx) => {
+      document.getElementById(`section-${idx}`).classList.toggle('active', idx === currentStep);
+      document.getElementById(`tab-${idx}`).classList.toggle('active', idx === currentStep);
+    });
+    updateStepUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateStepUI() {
+    document.getElementById('prevBtn').style.display = currentStep === 0 ? 'none' : 'block';
+    if (currentStep === milestoneData.length - 1) {
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('submitBtn').style.display = 'block';
+    } else {
+      document.getElementById('nextBtn').style.display = 'block';
+      document.getElementById('submitBtn').style.display = 'none';
+    }
+  }
+
+  // ⚠️ 請填寫部署獲得的 Google Apps Script Web App URL
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXN-jVo1IBrkF2V2kH3E59d13ONtulzCwTUDhYh5w5KwX0LqhATxL5RXL01HZJ2P2g/exec";
 
   function submitForm() {
     const doctorName = document.getElementById('doctorName').value;
     const evaluatorName = document.getElementById('evaluatorName').value;
-    const comments = document.getElementById('comments').value;
 
     if (!doctorName) { alert('請選擇受評住院醫師！'); return; }
     if (!evaluatorName) { alert('請填寫評核主治醫師姓名！'); return; }
 
     let evaluations = [];
-    let allAnswered = true;
 
     milestoneData.forEach(cat => {
+      const summaryStatus = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`)?.value || "";
+      const summaryComment = document.getElementById(`summary_comment_${cat.catId}`)?.value || "";
+
       cat.items.forEach(item => {
-        const selected = document.querySelector(`input[name="${item.id}"]:checked`);
-        if (!selected) {
-          allAnswered = false;
-        } else {
-          evaluations.push({
-            item: item.title,
-            level: selected.value
-          });
-        }
+        const selectedLevel = document.querySelector(`input[name="${item.id}"]:checked`)?.value || "未評估";
+        const suggestion = document.getElementById(`sug_${item.id}`)?.value || "";
+
+        evaluations.push({
+          category: cat.catName,
+          item: item.title,
+          level: selectedLevel,
+          suggestion: suggestion,
+          overallStatus: summaryStatus,
+          overallComment: summaryComment
+        });
       });
     });
-
-    if (!allAnswered) {
-      if (!confirm('尚有項目未完成選擇，確定要直接送出嗎？')) {
-        return;
-      }
-    }
 
     const payload = {
       doctorName: doctorName,
       evaluatorName: evaluatorName,
-      comments: comments,
       evaluations: evaluations
     };
 
@@ -354,7 +307,7 @@
     })
     .then(res => res.json())
     .then(data => {
-      alert('所有評核項目已成功送出並紀錄至 Google 試算表！');
+      alert('評核結果已成功送出並紀錄至 Google 試算表！');
       location.reload();
     })
     .catch(err => {
@@ -362,6 +315,9 @@
       console.error(err);
     });
   }
+
+  // 頁面載入後初始化
+  window.onload = initForm;
 </script>
 
 </body>
