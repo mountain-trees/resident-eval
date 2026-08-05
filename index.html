@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>住院醫師里程碑 2.0 線上評核表</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #2d3748; }
+    .container { max-width: 850px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    h1 { color: #1a365d; text-align: center; font-size: 24px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-row { display: flex; gap: 20px; margin-bottom: 25px; }
+    .form-col { flex: 1; }
+    
+    label.field-label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 15px; color: #2b6cb0; }
+    input[type="text"], select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 15px; background-color: #fff; }
+    input[type="text"]:focus, select:focus, textarea:focus { border-color: #3182ce; outline: none; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2); }
+    
+    /* 評核區塊 */
+    .eval-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #ffffff; }
+    .eval-title { font-weight: bold; font-size: 19px; color: #2c5282; margin-bottom: 15px; border-left: 4px solid #3182ce; padding-left: 10px; }
+    
+    /* 等級選項樣式 */
+    .level-group { display: flex; flex-direction: column; gap: 8px; }
+    
+    .level-option { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: flex-start; }
+    .level-option:hover { background: #ebf8ff; border-color: #63b3ed; }
+    .level-option input[type="radio"] { margin-top: 3px; margin-right: 12px; transform: scale(1.2); }
+    
+    /* 主要 Level 樣式 */
+    .level-tag { font-weight: bold; color: #2b6cb0; min-width: 80px; font-size: 15px; }
+    .level-desc { font-size: 14.5px; color: #4a5568; line-height: 1.5; flex: 1; }
+    
+    /* 中間 .5 級的特殊排版 */
+    .level-option.half-level { background: #fff; border-style: dashed; border-color: #cbd5e0; margin-left: 20px; }
+    .level-option.half-level:hover { background: #f7fafc; border-color: #4299e1; }
+    .level-option.half-level .level-tag { color: #d69e2e; }
+    .level-option.half-level .level-desc { color: #718096; font-style: italic; }
+
+    /* 其他選項（未達/無法評估） */
+    .level-option.other-option { background: #fff5f5; border-color: #fed7d7; }
+    .level-option.other-option .level-tag { color: #c53030; }
+
+    .submit-btn { width: 100%; background: #3182ce; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+    .submit-btn:hover { background: #2b6cb0; }
+
+    /* 行動裝置支援 */
+    @media (max-width: 640px) {
+      .form-row { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>住院醫師里程碑 2.0 臨床評核表</h1>
+  
+  <!-- 基本資料區：住院醫師（下拉選單）與 主治醫師（文字輸入） -->
+  <div class="form-row">
+    <div class="form-col">
+      <label class="field-label" for="doctorName">受評住院醫師姓名：</label>
+      <select id="doctorName" required>
+        <option value="">-- 請選擇住院醫師 --</option>
+        <option value="陳大明">陳大明 (R1)</option>
+        <option value="林小華">林小華 (R2)</option>
+        <option value="張志豪">張志豪 (R3)</option>
+        <option value="黃美玲">黃美玲 (R3)</option>
+        <!-- 💡 您可以自行在程式碼中修改或擴充醫師名單 -->
+      </select>
+    </div>
+
+    <div class="form-col">
+      <label class="field-label" for="evaluatorName">評核主治醫師姓名：</label>
+      <input type="text" id="evaluatorName" placeholder="請輸入主治醫師姓名" required>
+    </div>
+  </div>
+
+  <!-- 評核項目 1：Patient Care 1 -->
+  <div class="eval-card">
+    <div class="eval-title">Patient Care 1: 病史詢問 (History)</div>
+    
+    <div class="level-group">
+      <!-- Level 1 -->
+      <label class="level-option">
+        <input type="radio" name="pc1" value="Level 1" required>
+        <span class="level-tag">Level 1</span>
+        <span class="level-desc">在指導之下，訪談有常見症狀的病人，並報告詳盡的病史。</span>
+      </label>
+
+      <!-- Level 1.5 -->
+      <label class="level-option half-level">
+        <input type="radio" name="pc1" value="Level 1.5">
+        <span class="level-tag">Level 1.5</span>
+        <span class="level-desc">表現介於 Level 1 與 Level 2 之間（已超越 Level 1，但尚未完全達到 Level 2）。</span>
+      </label>
+      
+      <!-- Level 2 -->
+      <label class="level-option">
+        <input type="radio" name="pc1" value="Level 2">
+        <span class="level-tag">Level 2</span>
+        <span class="level-desc">依據鑑別診斷，訪談有常見症狀的病人，並做簡潔報告。</span>
+      </label>
+
+      <!-- Level 2.5 -->
+      <label class="level-option half-level">
+        <input type="radio" name="pc1" value="Level 2.5">
+        <span class="level-tag">Level 2.5</span>
+        <span class="level-desc">表現介於 Level 2 與 Level 3 之間。</span>
+      </label>
+
+      <!-- Level 3 -->
+      <label class="level-option">
+        <input type="radio" name="pc1" value="Level 3">
+        <span class="level-tag">Level 3</span>
+        <span class="level-desc">依據鑑別診斷，訪談有複雜症狀的病人，並做簡潔報告。</span>
+      </label>
+
+      <!-- Level 3.5 -->
+      <label class="level-option half-level">
+        <input type="radio" name="pc1" value="Level 3.5">
+        <span class="level-tag">Level 3.5</span>
+        <span class="level-desc">表現介於 Level 3 與 Level 4 之間。</span>
+      </label>
+
+      <!-- Level 4 -->
+      <label class="level-option">
+        <input type="radio" name="pc1" value="Level 4">
+        <span class="level-tag">Level 4</span>
+        <span class="level-desc">有效率的問診，內容包含重要社會心理層面與其他影響健康的病史，並做簡潔報告。</span>
+      </label>
+
+      <!-- Level 4.5 -->
+      <label class="level-option half-level">
+        <input type="radio" name="pc1" value="Level 4.5">
+        <span class="level-tag">Level 4.5</span>
+        <span class="level-desc">表現介於 Level 4 與 Level 5 之間。</span>
+      </label>
+
+      <!-- Level 5 -->
+      <label class="level-option">
+        <input type="radio" name="pc1" value="Level 5">
+        <span class="level-tag">Level 5</span>
+        <span class="level-desc">根據病人、家人與醫療體系需求，包含隱晦之相關病史，進行有效率且有用的問診。</span>
+      </label>
+
+      <!-- 未達等級 1 -->
+      <label class="level-option other-option">
+        <input type="radio" name="pc1" value="尚未達到等級 1">
+        <span class="level-tag">其他</span>
+        <span class="level-desc">尚未達到等級 1</span>
+      </label>
+
+      <!-- 無法評估 -->
+      <label class="level-option other-option">
+        <input type="radio" name="pc1" value="無法評估">
+        <span class="level-tag">其他</span>
+        <span class="level-desc">無法評估</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- 評語與建議 -->
+  <div class="form-group">
+    <label class="field-label" for="comments">總體建議與具體評語：</label>
+    <textarea id="comments" rows="4" placeholder="請填寫具體回饋與建議..."></textarea>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">送出評核結果</button>
+</div>
+
+<script>
+  // ⚠️ 請填寫您部署獲得的 Google Apps Script Web App URL
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXN-jVo1IBrkF2V2kH3E59d13ONtulzCwTUDhYh5w5KwX0LqhATxL5RXL01HZJ2P2g/exec";
+
+  function submitForm() {
+    const doctorName = document.getElementById('doctorName').value;
+    const evaluatorName = document.getElementById('evaluatorName').value;
+    const pc1Select = document.querySelector('input[name="pc1"]:checked');
+    const comments = document.getElementById('comments').value;
+
+    if (!doctorName) {
+      alert('請選擇受評住院醫師！');
+      return;
+    }
+    if (!evaluatorName) {
+      alert('請填寫評核主治醫師姓名！');
+      return;
+    }
+    if (!pc1Select) {
+      alert('請評定 Patient Care 1 等級！');
+      return;
+    }
+
+    const payload = {
+      doctorName: doctorName,
+      evaluatorName: evaluatorName,
+      comments: comments,
+      evaluations: [
+        { item: "Patient Care 1: 病史詢問", level: pc1Select.value }
+      ]
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert('評核結果已成功送出並紀錄！');
+      location.reload();
+    })
+    .catch(err => {
+      alert('送出失敗，請檢查網路或 URL');
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>
