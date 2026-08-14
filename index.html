@@ -9,26 +9,22 @@
     .container { max-width: 950px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
     h1 { color: #1a365d; text-align: center; font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
     
-    /* 基本資料列 */
-    .form-row { display: flex; gap: 15px; margin-bottom: 20px; background: #ebf8ff; padding: 15px; border-radius: 8px; border: 1px solid #bee3f8; }
-    .form-col { flex: 1; }
+    /* 基本資料列 (改為住院醫師、PGY、主治醫師三個下拉欄位) */
+    .form-row { display: flex; gap: 15px; margin-bottom: 20px; background: #ebf8ff; padding: 15px; border-radius: 8px; border: 1px solid #bee3f8; flex-wrap: wrap; }
+    .form-col { flex: 1; min-width: 220px; }
     label.field-label { font-weight: bold; display: block; margin-bottom: 6px; font-size: 14px; color: #2b6cb0; }
     input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; background-color: #fff; }
     
-    /* 分頁標籤導覽 (Tabs) - 樣式區分未完成與已暫存完成 */
+    /* 分頁標籤導覽 (Tabs) - 支援行動裝置橫向滑動 */
     .nav-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
     .tab-btn { padding: 9px 14px; border: none; background: #e2e8f0; color: #4a5568; font-weight: bold; font-size: 13.5px; border-radius: 6px; cursor: pointer; transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
     .tab-btn.active { background: #3182ce; color: white; }
     .tab-btn:hover:not(.active) { background: #cbd5e0; }
-    
-    /* 頁籤狀態標註：已暫存/已完成 (綠色) */
-    .tab-btn.saved-tab { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-    .tab-btn.saved-tab.active { background: #2f855a; color: white; }
 
     /* Section 區塊控制 */
     .section-content { display: none; }
     .section-content.active { display: block; }
-    .category-title { background: #2b6cb0; color: white; padding: 10px 15px; font-size: 17px; font-weight: bold; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .category-title { background: #2b6cb0; color: white; padding: 10px 15px; font-size: 17px; font-weight: bold; border-radius: 6px; margin-bottom: 15px; }
 
     /* 評核卡片樣式與未作答告警顏色 */
     .eval-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 25px; background: #ffffff; transition: all 0.3s ease; }
@@ -64,13 +60,7 @@
     /* 語音按鈕樣式 */
     .voice-btn { background: #edf2f7; border: 1px solid #cbd5e0; color: #2d3748; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
     .voice-btn:hover { background: #e2e8f0; }
-    .voice-btn.recording { background: #fed7d7; border-color: #e53e3e; color: #9b2c2c; animation: pulse 1.2s infinite; }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.6; }
-      100% { opacity: 1; }
-    }
+    .voice-btn.recording { background: #fed7d7; border-color: #e53e3e; color: #9b2c2c; }
 
     /* 大項總結區塊 */
     .category-summary-box { background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 15px; margin-top: 25px; margin-bottom: 15px; transition: all 0.3s ease; }
@@ -80,21 +70,19 @@
     .summary-options { display: flex; gap: 15px; margin-bottom: 10px; }
     .summary-options label { font-size: 14px; font-weight: bold; color: #2d3748; cursor: pointer; }
 
-    /* 按鈕列與暫存按鈕 */
-    .btn-row { display: flex; justify-content: space-between; margin-top: 25px; gap: 12px; flex-wrap: wrap; }
-    .action-btn { flex: 1; padding: 12px; font-size: 15px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; }
+    /* 按鈕列 */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 25px; gap: 15px; }
+    .action-btn { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
     .prev-btn { background: #e2e8f0; color: #4a5568; }
-    .save-btn { background: #ed8936; color: white; }
     .next-btn { background: #3182ce; color: white; }
     .submit-btn { background: #38a169; color: white; }
 
-    @media (max-width: 640px) { 
+    @media (max-width: 768px) { 
       body { padding: 8px; }
       .container { padding: 15px; }
       .form-row { flex-direction: column; gap: 10px; } 
       .summary-options { flex-direction: column; gap: 8px; }
       .other-options-row { flex-direction: column; gap: 8px; }
-      .btn-row { flex-direction: column; }
     }
   </style>
 </head>
@@ -103,28 +91,38 @@
 <div class="container">
   <h1>住院醫師里程碑 2.0 評核系統</h1>
   
-  <!-- 基本資料區：受評住院醫師 與 評核主治醫師 -->
+  <!-- 基本資料區：受評住院醫師、受評PGY醫師 與 評核主治醫師 -->
   <div class="form-row">
     <div class="form-col">
-      <label class="field-label" for="doctorName">受評住院醫師：</label>
-      <select id="doctorName" required onchange="autoSaveDraft()">
-        <option value="">-- 請選擇受評住院醫師 --</option>
-        <option value="束岳奇">束岳奇 (R1)</option>
-        <option value="呂哲為">呂哲為 (R1)</option>
-        <option value="游季蓁">游季蓁 (R2)</option>
-        <option value="李侑樺">李侑樺 (R2)</option>
-        <option value="藍韋翔">藍韋翔 (R2)</option>
-        <option value="曾以理">曾以理 (R2)</option>
+      <label class="field-label" for="residentDoctor">受評住院醫師：</label>
+      <select id="residentDoctor" onchange="onResidentSelect()">
+        <option value="">-- 請選擇住院醫師 --</option>
+        <option value="束岳奇 (R1)">束岳奇 (R1)</option>
+        <option value="呂哲為 (R1)">呂哲為 (R1)</option>
+        <option value="游季蓁 (R2)">游季蓁 (R2)</option>
+        <option value="李侑樺 (R2)">李侑樺 (R2)</option>
+        <option value="藍韋翔 (R2)">藍韋翔 (R2)</option>
+        <option value="曾以理 (R2)">曾以理 (R2)</option>
       </select>
     </div>
+
+    <div class="form-col">
+      <label class="field-label" for="pgyDoctor">受評 PGY 醫師：</label>
+      <select id="pgyDoctor" onchange="onPgySelect()">
+        <option value="">-- 請選擇 PGY 醫師 --</option>
+        <option value="PGY 醫師 A">PGY 醫師 A</option>
+        <option value="PGY 醫師 B">PGY 醫師 B</option>
+        <option value="PGY 醫師 C">PGY 醫師 C</option>
+        <!-- 💡 可在此自由新增或修改 PGY 醫師名單 -->
+      </select>
+    </div>
+
     <div class="form-col">
       <label class="field-label" for="evaluatorName">評核主治醫師：</label>
-      <select id="evaluatorName" required onchange="autoSaveDraft()">
+      <select id="evaluatorName" required>
         <option value="">-- 請選擇評核主治醫師 --</option>
         <option value="黃建維">黃建維</option>
-        <option value="陳羿元">陳羿元</option>  
-        <option value="王醫師">王醫師</option>  
-        <option value="李醫師">李醫師</option>  
+        <option value="陳羿元">陳羿元</option>        
       </select>
     </div>
   </div>
@@ -135,10 +133,9 @@
   <!-- 表單頁面容器 -->
   <div id="sectionsContainer"></div>
 
-  <!-- 上一步 / 暫存 / 下一步 / 送出按鈕列 -->
+  <!-- 上一步/下一步/送出按鈕列 -->
   <div class="btn-row">
     <button class="action-btn prev-btn" id="prevBtn" onclick="changeStep(-1)">上一步</button>
-    <button class="action-btn save-btn" id="saveBtn" onclick="saveCurrentStepDraft(true)">💾 暫存當前大項</button>
     <button class="action-btn next-btn" id="nextBtn" onclick="changeStep(1)">下一步</button>
     <button class="action-btn submit-btn" id="submitBtn" onclick="submitForm()" style="display:none;">完成並送出評核</button>
   </div>
@@ -232,7 +229,22 @@
   ];
 
   let currentStep = 0;
-  let activeSpeechRecognition = null; // 目前語音辨識實例
+  let activeSpeechRecognition = null;
+
+  // 住院醫師與 PGY 互斥選取
+  function onResidentSelect() {
+    const resSelect = document.getElementById('residentDoctor');
+    if (resSelect.value) {
+      document.getElementById('pgyDoctor').value = '';
+    }
+  }
+
+  function onPgySelect() {
+    const pgySelect = document.getElementById('pgyDoctor');
+    if (pgySelect.value) {
+      document.getElementById('residentDoctor').value = '';
+    }
+  }
 
   function initForm() {
     const tabContainer = document.getElementById('tabContainer');
@@ -306,7 +318,7 @@
                   🎤 語音輸入
                 </button>
               </div>
-              <input type="text" id="sug_${item.id}" placeholder="可輸入對該項目的文字建議..." onchange="autoSaveDraft()">
+              <input type="text" id="sug_${item.id}" placeholder="可輸入對該項目的文字建議...">
             </div>
           </div>
         `;
@@ -328,7 +340,7 @@
               🎤 語音輸入
             </button>
           </div>
-          <textarea id="summary_comment_${cat.catId}" rows="2" placeholder="對本大項的綜合評語與整體建議..." onchange="autoSaveDraft()"></textarea>
+          <textarea id="summary_comment_${cat.catId}" rows="2" placeholder="對本大項的綜合評語與整體建議..."></textarea>
         </div>
       `;
 
@@ -337,14 +349,13 @@
     });
 
     updateStepUI();
-    loadDraftData(); // 初始化載入暫存數據
   }
 
-  // 🎙️ 語音轉文字功能 (Web Speech API)
+  // 🎙️ 語音辨識功能
   function toggleVoiceRecognition(targetInputId, btnElement) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("您的瀏覽器或裝置不支援語音辨識，建議使用 Chrome、Safari 或 Edge 瀏覽器！");
+      alert("您的瀏覽器暫不支援網頁語音辨識。\n\n💡 建議直接點擊輸入框，使用手機鍵盤內建的「🎤 麥克風圖示」進行語音輸入！");
       return;
     }
 
@@ -353,42 +364,48 @@
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'zh-TW';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'zh-TW';
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-    recognition.onstart = function() {
-      btnElement.classList.add('recording');
-      btnElement.innerHTML = '🔴 錄音中...';
-      activeSpeechRecognition = recognition;
-    };
+      recognition.onstart = function() {
+        btnElement.classList.add('recording');
+        btnElement.innerHTML = '🔴 錄音中...';
+        activeSpeechRecognition = recognition;
+      };
 
-    recognition.onresult = function(event) {
-      const transcript = event.results[0][0].transcript;
-      const targetInput = document.getElementById(targetInputId);
-      if (targetInput) {
-        if (targetInput.value.trim() !== '') {
-          targetInput.value += ' ' + transcript;
-        } else {
-          targetInput.value = transcript;
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const targetInput = document.getElementById(targetInputId);
+        if (targetInput) {
+          if (targetInput.value.trim() !== '') {
+            targetInput.value += ' ' + transcript;
+          } else {
+            targetInput.value = transcript;
+          }
         }
-        autoSaveDraft();
-      }
-    };
+      };
 
-    recognition.onerror = function(event) {
-      console.error("語音辨識錯誤:", event.error);
-      alert("語音辨識失敗，請檢查麥克風權限或重試。");
-    };
+      recognition.onerror = function(event) {
+        console.error("語音辨識錯誤:", event.error);
+        btnElement.classList.remove('recording');
+        btnElement.innerHTML = '🎤 語音輸入';
+        activeSpeechRecognition = null;
+        alert("語音輸入啟動失敗 (" + event.error + ")。\n💡 建議點選輸入框，使用手機鍵盤自帶的「🎤 語音麥克風」輸入。");
+      };
 
-    recognition.onend = function() {
-      btnElement.classList.remove('recording');
-      btnElement.innerHTML = '🎤 語音輸入';
-      activeSpeechRecognition = null;
-    };
+      recognition.onend = function() {
+        btnElement.classList.remove('recording');
+        btnElement.innerHTML = '🎤 語音輸入';
+        activeSpeechRecognition = null;
+      };
 
-    recognition.start();
+      recognition.start();
+    } catch (err) {
+      console.error("語音啟動失敗:", err);
+    }
   }
 
   // 點選星星互動邏輯
@@ -405,7 +422,6 @@
     otherRadios.forEach(r => r.checked = false);
 
     document.getElementById(`card_${itemId}`).classList.remove('unanswered');
-    autoSaveDraft();
   }
 
   // 點選其他選項
@@ -418,146 +434,27 @@
       starRadios.forEach(r => r.checked = false);
     }
     document.getElementById(`card_${itemId}`).classList.remove('unanswered');
-    autoSaveDraft();
   }
 
   function clearSummaryAlert(catId) {
     document.getElementById(`summary_box_${catId}`).classList.remove('unanswered');
-    autoSaveDraft();
-  }
-
-  // 💾 暫存功能 (LocalStorage)
-  function saveCurrentStepDraft(showAlert = false) {
-    const currentCat = milestoneData[currentStep];
-    
-    // 檢查基本資料
-    const doctorName = document.getElementById('doctorName').value;
-    const evaluatorName = document.getElementById('evaluatorName').value;
-
-    let draftData = JSON.parse(localStorage.getItem('eval_draft') || '{}');
-    if (!draftData.savedCategories) draftData.savedCategories = {};
-
-    draftData.doctorName = doctorName;
-    draftData.evaluatorName = evaluatorName;
-
-    // 儲存所有已選擇欄位
-    milestoneData.forEach(cat => {
-      cat.items.forEach(item => {
-        const selected = document.querySelector(`input[name="${item.id}"]:checked`)?.value || "";
-        const sug = document.getElementById(`sug_${item.id}`)?.value || "";
-        draftData[item.id] = selected;
-        draftData[`sug_${item.id}`] = sug;
-      });
-
-      const summaryStatus = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`)?.value || "";
-      const summaryComment = document.getElementById(`summary_comment_${cat.catId}`)?.value || "";
-      draftData[`summary_status_${cat.catId}`] = summaryStatus;
-      draftData[`summary_comment_${cat.catId}`] = summaryComment;
-    });
-
-    // 檢查當前大項是否完整填寫完畢，若填妥則將此大項標記為 completed
-    let isCurrentCatComplete = true;
-    currentCat.items.forEach(item => {
-      if (!draftData[item.id]) isCurrentCatComplete = false;
-    });
-    if (!draftData[`summary_status_${currentCat.catId}`]) isCurrentCatComplete = false;
-
-    if (isCurrentCatComplete) {
-      draftData.savedCategories[currentCat.catId] = true;
-    }
-
-    localStorage.setItem('eval_draft', JSON.stringify(draftData));
-    updateTabBadgeStatus();
-
-    if (showAlert) {
-      if (isCurrentCatComplete) {
-        alert(`已成功暫存「${currentCat.catName}」！頁籤已標註為完成 ✓`);
-      } else {
-        alert(`已儲存當前填寫進度（注意：${currentCat.catName} 尚有項目未完成）。`);
-      }
-    }
-  }
-
-  function autoSaveDraft() {
-    saveCurrentStepDraft(false);
-  }
-
-  // 讀取暫存數據
-  function loadDraftData() {
-    const draftStr = localStorage.getItem('eval_draft');
-    if (!draftStr) return;
-
-    const draftData = JSON.parse(draftStr);
-
-    if (draftData.doctorName) document.getElementById('doctorName').value = draftData.doctorName;
-    if (draftData.evaluatorName) document.getElementById('evaluatorName').value = draftData.evaluatorName;
-
-    milestoneData.forEach(cat => {
-      cat.items.forEach(item => {
-        const val = draftData[item.id];
-        if (val) {
-          const radio = document.querySelector(`input[name="${item.id}"][value="${val}"]`);
-          if (radio) {
-            radio.checked = true;
-            if (val.startsWith('Level')) {
-              const starItem = radio.closest('.star-item');
-              if (starItem) selectStar(item.id, val, starItem);
-            }
-          }
-        }
-        if (draftData[`sug_${item.id}`]) {
-          document.getElementById(`sug_${item.id}`).value = draftData[`sug_${item.id}`];
-        }
-      });
-
-      const summaryVal = draftData[`summary_status_${cat.catId}`];
-      if (summaryVal) {
-        const sumRadio = document.querySelector(`input[name="summary_status_${cat.catId}"][value="${summaryVal}"]`);
-        if (sumRadio) sumRadio.checked = true;
-      }
-
-      if (draftData[`summary_comment_${cat.catId}`]) {
-        document.getElementById(`summary_comment_${cat.catId}`).value = draftData[`summary_comment_${cat.catId}`];
-      }
-    });
-
-    updateTabBadgeStatus();
-  }
-
-  // 更新頁籤標示 (完成標註綠色背景與 ✓)
-  function updateTabBadgeStatus() {
-    const draftData = JSON.parse(localStorage.getItem('eval_draft') || '{}');
-    const savedCategories = draftData.savedCategories || {};
-
-    milestoneData.forEach((cat, idx) => {
-      const tabBtn = document.getElementById(`tab-${idx}`);
-      
-      // 檢查當前大項是否所有題目標註完成
-      let isAllAnswered = true;
-      cat.items.forEach(item => {
-        const selected = document.querySelector(`input[name="${item.id}"]:checked`);
-        if (!selected) isAllAnswered = false;
-      });
-      const summarySelected = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`);
-      if (!summarySelected) isAllAnswered = false;
-
-      if (isAllAnswered || savedCategories[cat.catId]) {
-        tabBtn.classList.add('saved-tab');
-        tabBtn.innerText = `${cat.tabLabel} ✓`;
-      } else {
-        tabBtn.classList.remove('saved-tab');
-        tabBtn.innerText = cat.tabLabel;
-      }
-    });
   }
 
   // 檢查當前頁面填寫完整度
   function validateCurrentStep() {
     if (currentStep === 0) {
-      const doctorName = document.getElementById('doctorName').value;
+      const residentDoctor = document.getElementById('residentDoctor').value;
+      const pgyDoctor = document.getElementById('pgyDoctor').value;
       const evaluatorName = document.getElementById('evaluatorName').value;
-      if (!doctorName) { alert('請選擇受評住院醫師！'); return false; }
-      if (!evaluatorName) { alert('請選擇評核主治醫師！'); return false; }
+
+      if (!residentDoctor && !pgyDoctor) {
+        alert('請選擇「受評住院醫師」或「受評 PGY 醫師」！');
+        return false;
+      }
+      if (!evaluatorName) {
+        alert('請選擇評核主治醫師！');
+        return false;
+      }
     }
 
     const currentCat = milestoneData[currentStep];
@@ -626,13 +523,17 @@
     }
   }
 
+  // ⚠️ 請填寫部署獲得的 Google Apps Script Web App URL（結尾務必為 /exec）
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXN-jVo1IBrkF2V2kH3E59d13ONtulzCwTUDhYh5w5KwX0LqhATxL5RXL01HZJ2P2g/exec";
 
   function submitForm() {
     if (!validateCurrentStep()) return;
 
-    const doctorName = document.getElementById('doctorName').value;
+    const residentDoctor = document.getElementById('residentDoctor').value;
+    const pgyDoctor = document.getElementById('pgyDoctor').value;
     const evaluatorName = document.getElementById('evaluatorName').value;
+
+    const finalDoctorName = residentDoctor || pgyDoctor;
 
     let evaluations = [];
 
@@ -656,7 +557,7 @@
     });
 
     const payload = {
-      doctorName: doctorName,
+      doctorName: finalDoctorName,
       evaluatorName: evaluatorName,
       evaluations: evaluations
     };
@@ -668,7 +569,6 @@
     .then(res => res.json())
     .then(data => {
       alert('評核結果已成功送出並紀錄至 Google 試算表！');
-      localStorage.removeItem('eval_draft'); // 成功送出後清除本地暫存
       location.reload();
     })
     .catch(err => {
