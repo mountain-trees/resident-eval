@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>住院醫師里程碑 2.0 線上評核系統</title>
+  <title>住院醫師里程碑 2.0 線上評核</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f4f8; margin: 0; padding: 15px; color: #2d3748; }
     .container { max-width: 950px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
@@ -15,11 +15,15 @@
     label.field-label { font-weight: bold; display: block; margin-bottom: 6px; font-size: 14px; color: #2b6cb0; }
     input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; background-color: #fff; }
     
-    /* 分頁標籤導覽 (Tabs) - 支援行動裝置橫向滑動 */
+    /* 分頁標籤導覽 (Tabs) - 支援完成狀態顏色標註與手機橫向滑動 */
     .nav-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
-    .tab-btn { padding: 9px 14px; border: none; background: #e2e8f0; color: #4a5568; font-weight: bold; font-size: 13.5px; border-radius: 6px; cursor: pointer; transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
-    .tab-btn.active { background: #3182ce; color: white; }
+    .tab-btn { padding: 9px 14px; border: 1px solid #cbd5e0; background: #e2e8f0; color: #4a5568; font-weight: bold; font-size: 13.5px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0; }
+    .tab-btn.active { background: #3182ce; color: white; border-color: #2b6cb0; }
     .tab-btn:hover:not(.active) { background: #cbd5e0; }
+
+    /* 頁籤完成標註 (綠色樣式) */
+    .tab-btn.completed-tab { background: #c6f6d5; color: #22543d; border-color: #9ae6b4; }
+    .tab-btn.completed-tab.active { background: #2f855a; color: white; border-color: #22543d; }
 
     /* Section 區塊控制 */
     .section-content { display: none; }
@@ -116,14 +120,13 @@
         <option value="黃昱睿">黃昱睿</option>
         <option value="鄭楷融">鄭楷融</option>
         <option value="湯柏昱">湯柏昱</option>
-        <!-- 💡 可在此自由新增或修改 PGY 醫師名單 -->
       </select>
     </div>
 
     <div class="form-col">
       <label class="field-label" for="evaluatorName">評核主治醫師：</label>
-      <select id="evaluatorName" required>
-      <option value="">-- 請選擇評核主治醫師 --</option>
+      <select id="evaluatorName" onchange="saveToStorage()" required>
+        <option value="">-- 請選擇評核主治醫師 --</option>
         <option value="王愷君">王愷君</option>
         <option value="林子騫">林子騫</option>
         <option value="林文仁">林文仁</option> 
@@ -136,7 +139,7 @@
     </div>
   </div>
 
-  <!-- 6大項分頁標籤導覽列 -->
+  <!-- 6大項分頁標籤導覽列 (可任意點選) -->
   <div class="nav-tabs" id="tabContainer"></div>
 
   <!-- 表單頁面容器 -->
@@ -246,6 +249,7 @@
     if (resSelect.value) {
       document.getElementById('pgyDoctor').value = '';
     }
+    saveToStorage();
   }
 
   function onPgySelect() {
@@ -253,6 +257,7 @@
     if (pgySelect.value) {
       document.getElementById('residentDoctor').value = '';
     }
+    saveToStorage();
   }
 
   function initForm() {
@@ -260,6 +265,7 @@
     const sectionsContainer = document.getElementById('sectionsContainer');
 
     milestoneData.forEach((cat, cIdx) => {
+      // 1. 建立 Tab (可自由點選跳轉)
       const tabBtn = document.createElement('button');
       tabBtn.className = `tab-btn ${cIdx === 0 ? 'active' : ''}`;
       tabBtn.id = `tab-${cIdx}`;
@@ -267,6 +273,7 @@
       tabBtn.onclick = () => goToStep(cIdx);
       tabContainer.appendChild(tabBtn);
 
+      // 2. 建立 Section 內容
       const secDiv = document.createElement('div');
       secDiv.className = `section-content ${cIdx === 0 ? 'active' : ''}`;
       secDiv.id = `section-${cIdx}`;
@@ -327,7 +334,7 @@
                   🎤 語音輸入
                 </button>
               </div>
-              <input type="text" id="sug_${item.id}" placeholder="可輸入對該項目的文字建議...">
+              <input type="text" id="sug_${item.id}" placeholder="可輸入對該項目的文字建議..." oninput="saveToStorage()">
             </div>
           </div>
         `;
@@ -349,7 +356,7 @@
               🎤 語音輸入
             </button>
           </div>
-          <textarea id="summary_comment_${cat.catId}" rows="2" placeholder="對本大項的綜合評語與整體建議..."></textarea>
+          <textarea id="summary_comment_${cat.catId}" rows="2" placeholder="對本大項的綜合評語與整體建議..." oninput="saveToStorage()"></textarea>
         </div>
       `;
 
@@ -358,6 +365,7 @@
     });
 
     updateStepUI();
+    loadFromStorage(); // 載入本機暫存資料
   }
 
   // 🎙️ 語音辨識功能
@@ -394,6 +402,7 @@
           } else {
             targetInput.value = transcript;
           }
+          saveToStorage();
         }
       };
 
@@ -431,6 +440,7 @@
     otherRadios.forEach(r => r.checked = false);
 
     document.getElementById(`card_${itemId}`).classList.remove('unanswered');
+    saveToStorage();
   }
 
   // 點選其他選項
@@ -443,72 +453,152 @@
       starRadios.forEach(r => r.checked = false);
     }
     document.getElementById(`card_${itemId}`).classList.remove('unanswered');
+    saveToStorage();
   }
 
   function clearSummaryAlert(catId) {
     document.getElementById(`summary_box_${catId}`).classList.remove('unanswered');
+    saveToStorage();
   }
 
-  // 檢查當前頁面填寫完整度
-  function validateCurrentStep() {
-    if (currentStep === 0) {
-      const residentDoctor = document.getElementById('residentDoctor').value;
-      const pgyDoctor = document.getElementById('pgyDoctor').value;
-      const evaluatorName = document.getElementById('evaluatorName').value;
-
-      if (!residentDoctor && !pgyDoctor) {
-        alert('請選擇「受評住院醫師」或「受評 PGY 醫師」！');
-        return false;
-      }
-      if (!evaluatorName) {
-        alert('請選擇評核主治醫師！');
-        return false;
-      }
-    }
-
-    const currentCat = milestoneData[currentStep];
-    let unansweredItems = [];
-
-    currentCat.items.forEach((item, index) => {
+  // 判斷單一大項是否完整填妥
+  function isCategoryFinished(cIdx) {
+    const cat = milestoneData[cIdx];
+    for (let item of cat.items) {
       const selected = document.querySelector(`input[name="${item.id}"]:checked`);
-      const card = document.getElementById(`card_${item.id}`);
-      if (!selected) {
-        card.classList.add('unanswered');
-        unansweredItems.push(`第 ${index + 1} 題 (${item.title})`);
-      } else {
-        card.classList.remove('unanswered');
-      }
-    });
-
-    const summarySelected = document.querySelector(`input[name="summary_status_${currentCat.catId}"]:checked`);
-    const summaryBox = document.getElementById(`summary_box_${currentCat.catId}`);
-    if (!summarySelected) {
-      summaryBox.classList.add('unanswered');
-      unansweredItems.push(`${currentCat.catName} 綜合評估`);
-    } else {
-      summaryBox.classList.remove('unanswered');
+      if (!selected) return false;
     }
-
-    if (unansweredItems.length > 0) {
-      alert(`尚有未作答項目：\n• ${unansweredItems[0]} 尚未作答！\n（請選擇 Level、尚未達到等級 1 或無法評估）`);
-      const firstUnansweredEl = document.querySelector('.unanswered');
-      if (firstUnansweredEl) {
-        firstUnansweredEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return false;
-    }
-
+    const sumSelected = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`);
+    if (!sumSelected) return false;
     return true;
   }
 
+  // 檢查所有 6 大項是否皆已完整填寫完畢
+  function checkIsAllFullyCompleted() {
+    for (let cIdx = 0; cIdx < milestoneData.length; cIdx++) {
+      if (!isCategoryFinished(cIdx)) return false;
+    }
+    return true;
+  }
+
+  // 💾 本機即時自動暫存 (Local Storage)
+  function saveToStorage() {
+    let draft = {
+      residentDoctor: document.getElementById('residentDoctor').value,
+      pgyDoctor: document.getElementById('pgyDoctor').value,
+      evaluatorName: document.getElementById('evaluatorName').value,
+      evaluations: {},
+      suggestions: {},
+      summaryStatus: {},
+      summaryComments: {}
+    };
+
+    milestoneData.forEach(cat => {
+      cat.items.forEach(item => {
+        const sel = document.querySelector(`input[name="${item.id}"]:checked`);
+        if (sel) draft.evaluations[item.id] = sel.value;
+        const sug = document.getElementById(`sug_${item.id}`);
+        if (sug && sug.value) draft.suggestions[item.id] = sug.value;
+      });
+
+      const sumSel = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`);
+      if (sumSel) draft.summaryStatus[cat.catId] = sumSel.value;
+      const sumCom = document.getElementById(`summary_comment_${cat.catId}`);
+      if (sumCom && sumCom.value) draft.summaryComments[cat.catId] = sumCom.value;
+    });
+
+    localStorage.setItem('milestone_eval_draft_v2', JSON.stringify(draft));
+    updateTabCompletionStatus();
+    updateStepUI(); // 動態刷新按鈕狀態
+  }
+
+  // 讀取本機暫存
+  function loadFromStorage() {
+    const raw = localStorage.getItem('milestone_eval_draft_v2');
+    if (!raw) return;
+
+    try {
+      const draft = JSON.parse(raw);
+      if (draft.residentDoctor) document.getElementById('residentDoctor').value = draft.residentDoctor;
+      if (draft.pgyDoctor) document.getElementById('pgyDoctor').value = draft.pgyDoctor;
+      if (draft.evaluatorName) document.getElementById('evaluatorName').value = draft.evaluatorName;
+
+      milestoneData.forEach(cat => {
+        cat.items.forEach(item => {
+          const val = draft.evaluations ? draft.evaluations[item.id] : null;
+          if (val) {
+            const rad = document.querySelector(`input[name="${item.id}"][value="${val}"]`);
+            if (rad) {
+              rad.checked = true;
+              if (val.startsWith('Level')) {
+                const starItem = rad.closest('.star-item');
+                if (starItem) selectStar(item.id, val, starItem);
+              }
+            }
+          }
+          if (draft.suggestions && draft.suggestions[item.id]) {
+            document.getElementById(`sug_${item.id}`).value = draft.suggestions[item.id];
+          }
+        });
+
+        if (draft.summaryStatus && draft.summaryStatus[cat.catId]) {
+          const sumRad = document.querySelector(`input[name="summary_status_${cat.catId}"][value="${draft.summaryStatus[cat.catId]}"]`);
+          if (sumRad) sumRad.checked = true;
+        }
+        if (draft.summaryComments && draft.summaryComments[cat.catId]) {
+          document.getElementById(`summary_comment_${cat.catId}`).value = draft.summaryComments[cat.catId];
+        }
+      });
+
+      updateTabCompletionStatus();
+      updateStepUI();
+    } catch (e) {
+      console.error("載入暫存失敗:", e);
+    }
+  }
+
+  // 🏷️ 判斷大項是否完成，並以顏色標註頁籤
+  function updateTabCompletionStatus() {
+    milestoneData.forEach((cat, idx) => {
+      const isCatComplete = isCategoryFinished(idx);
+      const tabBtn = document.getElementById(`tab-${idx}`);
+      if (tabBtn) {
+        if (isCatComplete) {
+          tabBtn.classList.add('completed-tab');
+          tabBtn.innerText = `${cat.tabLabel} ✓`;
+        } else {
+          tabBtn.classList.remove('completed-tab');
+          tabBtn.innerText = cat.tabLabel;
+        }
+      }
+    });
+  }
+
+  // 自由切換步驟 (自動循環至未完成頁面)
   function changeStep(delta) {
-    if (delta > 0 && !validateCurrentStep()) {
-      return;
-    }
+    const total = milestoneData.length;
     let nextStep = currentStep + delta;
-    if (nextStep >= 0 && nextStep < milestoneData.length) {
-      goToStep(nextStep);
+
+    if (delta > 0) {
+      // 點選「下一步」：從下一個大項開始依序尋找下一個未完成頁面
+      let target = -1;
+      for (let i = 1; i <= total; i++) {
+        let checkIdx = (currentStep + i) % total;
+        if (!isCategoryFinished(checkIdx)) {
+          target = checkIdx;
+          break;
+        }
+      }
+      // 若有未完成頁面則跳至該未完成大項，否則按順序跳轉
+      nextStep = (target !== -1) ? target : ((currentStep + 1) % total);
+    } else {
+      // 點選「上一步」：往前循環
+      if (nextStep < 0) {
+        nextStep = total - 1;
+      }
     }
+
+    goToStep(nextStep);
   }
 
   function goToStep(stepIndex) {
@@ -521,27 +611,85 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // ✨ 按鈕控制：第 1~5 項點選時顯示下一步；最後一項完成時直接出現「完成並送出評核」
   function updateStepUI() {
-    document.getElementById('prevBtn').style.display = currentStep === 0 ? 'none' : 'block';
-    if (currentStep === milestoneData.length - 1) {
-      document.getElementById('nextBtn').style.display = 'none';
-      document.getElementById('submitBtn').style.display = 'block';
+    const isAllComplete = checkIsAllFullyCompleted();
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    prevBtn.style.display = currentStep === 0 ? 'none' : 'block';
+
+    if (isAllComplete) {
+      // 6 大項皆完成時，不論停留在哪一頁，直接顯示送出按鈕
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'block';
     } else {
-      document.getElementById('nextBtn').style.display = 'block';
-      document.getElementById('submitBtn').style.display = 'none';
+      // 尚未全部完成時，一律保持顯示「下一步」供考官跳轉
+      submitBtn.style.display = 'none';
+      nextBtn.style.display = 'block';
     }
+  }
+
+  // ⚠️ 驗證全域 6 大項是否皆已完整完成
+  function validateAllCategories() {
+    const residentDoctor = document.getElementById('residentDoctor').value;
+    const pgyDoctor = document.getElementById('pgyDoctor').value;
+    const evaluatorName = document.getElementById('evaluatorName').value;
+
+    if (!residentDoctor && !pgyDoctor) {
+      alert('請先選擇「受評住院醫師」或「受評 PGY 醫師」！');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return false;
+    }
+    if (!evaluatorName) {
+      alert('請先選擇「評核主治醫師」！');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return false;
+    }
+
+    for (let cIdx = 0; cIdx < milestoneData.length; cIdx++) {
+      const cat = milestoneData[cIdx];
+      
+      // 檢查子題目
+      for (let iIdx = 0; iIdx < cat.items.length; iIdx++) {
+        const item = cat.items[iIdx];
+        const selected = document.querySelector(`input[name="${item.id}"]:checked`);
+        if (!selected) {
+          goToStep(cIdx);
+          const card = document.getElementById(`card_${item.id}`);
+          card.classList.add('unanswered');
+          alert(`【${cat.catName}】尚未完成：\n第 ${iIdx + 1} 題 (${item.title}) 尚未評選！\n（請完成評選後再送出）`);
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return false;
+        }
+      }
+
+      // 檢查大項綜合評估
+      const sumSelected = document.querySelector(`input[name="summary_status_${cat.catId}"]:checked`);
+      if (!sumSelected) {
+        goToStep(cIdx);
+        const sumBox = document.getElementById(`summary_box_${cat.catId}`);
+        sumBox.classList.add('unanswered');
+        alert(`【${cat.catName}】尚未完成：\n請勾選「${cat.catName} 綜合評估」！`);
+        sumBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+    }
+
+    return true;
   }
 
   // ⚠️ 請填寫部署獲得的 Google Apps Script Web App URL（結尾務必為 /exec）
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXN-jVo1IBrkF2V2kH3E59d13ONtulzCwTUDhYh5w5KwX0LqhATxL5RXL01HZJ2P2g/exec";
 
   function submitForm() {
-    if (!validateCurrentStep()) return;
+    // 必須 6 大項皆完成才允許送出
+    if (!validateAllCategories()) return;
 
     const residentDoctor = document.getElementById('residentDoctor').value;
     const pgyDoctor = document.getElementById('pgyDoctor').value;
     const evaluatorName = document.getElementById('evaluatorName').value;
-
     const finalDoctorName = residentDoctor || pgyDoctor;
 
     let evaluations = [];
@@ -571,18 +719,27 @@
       evaluations: evaluations
     };
 
+    // 禁用送出按鈕防止重複點擊
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerText = "資料傳送中，請稍候...";
+
     fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
       body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
-      alert('評核結果已成功送出並紀錄至 Google 試算表！');
+      alert('🎉 評核結果已成功送出並紀錄至 Google 試算表！\n即將清空畫面與本機暫存。');
+      // 成功送出後，徹底清除本機暫存與重置所有表單
+      localStorage.removeItem('milestone_eval_draft_v2');
       location.reload();
     })
     .catch(err => {
       alert('送出失敗，請檢查網路或 Apps Script URL');
       console.error(err);
+      submitBtn.disabled = false;
+      submitBtn.innerText = "完成並送出評核";
     });
   }
 
